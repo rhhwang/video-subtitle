@@ -1,0 +1,15 @@
+# Core
+openai-whisper
+openai>=1.0.0
+gradio>=4.0.0
+
+# openai-whisper dependencies (usually pulled in automatically)
+torch
+numpy
+tqdm
+more-itertools
+transformers>=4.19.0
+ffmpeg-python
+
+# Note: ffmpeg binary must be installed separately.
+# On Windows: winget install Gyan.FFmpeg
