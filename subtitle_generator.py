@@ -86,11 +86,7 @@ def to_traditional_chinese(text: str) -> str:
         converter = opencc.OpenCC("s2twp")  # Simplified -> Traditional (Taiwan + phrases)
         return converter.convert(text)
     except ImportError:
-        raise ImportError(
-            "opencc-python-reimplemented is required for Traditional Chinese conversion.
-"
-            "Install with: pip install opencc-python-reimplemented"
-        )
+        raise ImportError("opencc-python-reimplemented is required. Install with: pip install opencc-python-reimplemented")
 
 
 def convert_srt_to_traditional(srt_content: str) -> str:
