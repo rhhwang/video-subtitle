@@ -1,4 +1,5 @@
 # Core
+opencc-python-reimplemented
 openai-whisper
 openai>=1.0.0
 gradio>=4.0.0

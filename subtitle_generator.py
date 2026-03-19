@@ -76,6 +76,32 @@ def build_srt(entries: list[dict]) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Chinese Simplified -> Traditional conversion
+# ---------------------------------------------------------------------------
+
+def to_traditional_chinese(text: str) -> str:
+    """Convert Simplified Chinese to Traditional Chinese (Taiwan) using opencc."""
+    try:
+        import opencc
+        converter = opencc.OpenCC("s2twp")  # Simplified -> Traditional (Taiwan + phrases)
+        return converter.convert(text)
+    except ImportError:
+        raise ImportError(
+            "opencc-python-reimplemented is required for Traditional Chinese conversion.
+"
+            "Install with: pip install opencc-python-reimplemented"
+        )
+
+
+def convert_srt_to_traditional(srt_content: str) -> str:
+    """Convert all subtitle text in an SRT from Simplified to Traditional Chinese."""
+    entries = parse_srt(srt_content)
+    for entry in entries:
+        entry["text"] = to_traditional_chinese(entry["text"])
+    return build_srt(entries)
+
+
+# ---------------------------------------------------------------------------
 # Transcription
 # ---------------------------------------------------------------------------
 
@@ -84,12 +110,17 @@ def transcribe_video(
     model_size: str = "medium",
     device: str = "cuda",
     language: Optional[str] = None,
+    auto_traditional: bool = True,
 ) -> tuple[str, str]:
     """
     Transcribe a video file using OpenAI Whisper.
 
+    When Chinese is detected and auto_traditional=True (default), the output
+    is automatically converted from Simplified to Traditional Chinese.
+
     Returns:
         (srt_content, detected_language_code)
+        Language code will be zh-TW when auto-converted to Traditional Chinese.
     """
     import whisper
 
@@ -102,6 +133,12 @@ def transcribe_video(
         result = model.transcribe(audio_path, language=language, verbose=False)
         srt = segments_to_srt(result["segments"])
         detected = result.get("language", "unknown")
+
+        # Auto-convert Chinese Simplified -> Traditional
+        if auto_traditional and detected == "zh":
+            srt = convert_srt_to_traditional(srt)
+            detected = "zh-TW"
+
         return srt, detected
     finally:
         if os.path.exists(audio_path):
