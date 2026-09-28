@@ -67,9 +67,9 @@ def main() -> int:
     )
     parser.add_argument(
         "--device",
-        default="cuda",
+        default=None,
         choices=["cuda", "cpu"],
-        help="Device for Whisper inference (default: cuda). Ignored when --srt is used.",
+        help="Device for Whisper inference (default: cuda if available, else cpu). Ignored when --srt is used.",
     )
 
     # --- Translation options ---
@@ -163,7 +163,7 @@ def main() -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # --- Transcription ---
-    print(f"Loading Whisper '{args.model}' model on {args.device}…")
+    print(f"Loading Whisper '{args.model}' model on {args.device or 'auto'}…")
     print(f"Transcribing: {video_path.name}")
 
     try:

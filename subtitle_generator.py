@@ -104,7 +104,7 @@ def convert_srt_to_traditional(srt_content: str) -> str:
 def transcribe_video(
     video_path: str,
     model_size: str = "medium",
-    device: str = "cuda",
+    device: Optional[str] = None,
     language: Optional[str] = None,
     auto_traditional: bool = True,
 ) -> tuple[str, str]:
@@ -117,8 +117,14 @@ def transcribe_video(
     Returns:
         (srt_content, detected_language_code)
         Language code will be zh-TW when auto-converted to Traditional Chinese.
+
+    device defaults to "cuda" when available, otherwise "cpu" (e.g. on macOS).
     """
     import whisper
+
+    if device is None:
+        import torch
+        device = "cuda" if torch.cuda.is_available() else "cpu"
 
     with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
         audio_path = f.name
