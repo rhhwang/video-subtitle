@@ -30,3 +30,6 @@ Thumbs.db
 # Secrets
 *.env
 .env*
+
+# Local docs (not for repo)
+user_manual.docx
